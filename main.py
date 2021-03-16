@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import logging
 import os
+import time
 app = FastAPI()
 
 # MODELS
@@ -48,6 +49,9 @@ def current_city_temp(data: Weather):
     data = requests.get(url).json()
     current_temp = data['main']['temp']
     current_temp = round(current_temp - 273.15)
-    # this will return something like 'clear skies'
+    # this will return something like 'clear skies
     description = data['weather'][0]['description']
-    return {"current_temp": current_temp, "description": description}
+    feels_like = round(data['main']['feels_like'] - 273.15)
+    time_now = data['dt']
+    time_now = time.ctime(time_now)
+    return {"time": time_now, "current_temp": current_temp, "feels_like": feels_like, "description": description}
