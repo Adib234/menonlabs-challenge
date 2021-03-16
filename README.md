@@ -8,6 +8,7 @@
 
 - Django requires a lot of setup so we ended up choosing FastAPI
 - Learned how to create my own way to log requests to better debug
+- Never ever mutate computed properties!
 
 # To do
 

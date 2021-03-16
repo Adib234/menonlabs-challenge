@@ -9,6 +9,14 @@
       <div
         class="is-size-4 temperature"
       >Now showing the temperature in {{city}}, last updated {{time}}</div>
+      <div class="all-tags">
+        <div class="checkbox" v-for="(key,index) in Object.keys(hide)" :key="key">
+          <label class="checkbox">
+            <input @change="deleteTag(index)" type="checkbox" />
+            {{key}}
+          </label>
+        </div>
+      </div>
       <table class="table is-bordered">
         <thead>
           <tr>
@@ -17,9 +25,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="key in Object.keys(hide)" :key="key">
-            <th>{{key}}</th>
-            <th>{{hide[key][0]}} °C</th>
+          <tr v-for="(key,index) in Object.keys(hide)" :key="key">
+            <th v-if="!shown[index]">{{key}}</th>
+            <th v-if="!shown[index]">{{hide[key]}}</th>
           </tr>
         </tbody>
       </table>
@@ -42,7 +50,8 @@ export default {
       description: "",
       success_current: false,
       time: null,
-      feels_like: 0
+      feels_like: 0,
+      shown: [false, false, false]
     };
   },
   methods: {
@@ -57,6 +66,7 @@ export default {
             self.success_current = true;
             console.log(response.data);
             self.temperature = response.data["current_temp"];
+            self.temperature += " °C";
             console.log(self.temperature);
             self.description = response.data["description"];
             self.time = response.data["time"];
@@ -69,14 +79,18 @@ export default {
       } else {
         alert("Please enter a city name");
       }
+    },
+    deleteTag: function(tag) {
+      this.$set(this.shown, tag, !this.shown[tag]);
+      console.log(this.shown[tag]);
     }
   },
   computed: {
     hide: function() {
       return {
-        Temperature: [this.temperature, false],
-        Description: [this.description, false],
-        "Feels like": [this.feels_like, false]
+        Temperature: this.temperature,
+        Description: this.description,
+        "Feels like": this.feels_like
       };
     }
   }
@@ -91,6 +105,18 @@ export default {
 .table {
   margin: 0 auto;
   margin-top: 2rem;
+}
+.has-addons {
+  margin-left: 0.5rem;
+}
+.all-tags {
+  margin: 0 auto;
+  width: 50%;
+  align-items: center;
+  display: flex;
+}
+.checkbox {
+  margin-left: 0.5rem;
 }
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
