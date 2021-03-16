@@ -8,11 +8,14 @@ import logging
 import os
 app = FastAPI()
 
+# MODELS
+
 
 class Weather(BaseModel):
     city_name: str
 
 
+# MIDDLEWARE
 origins = [
     "http://localhost.tiangolo.com",
     "https://localhost.tiangolo.com",
@@ -29,6 +32,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# ROUTES/ENDPOINTS
+
 
 @app.get("/")
 def read_root():
@@ -37,10 +42,12 @@ def read_root():
 
 @app.post("/city/")
 def current_city_temp(data: Weather):
+    logging.info(data)
     url = 'http://api.openweathermap.org/data/2.5/weather?q={0}&appid={1}'.format(
         data.city_name, os.environ.get('API_KEY'))
     data = requests.get(url).json()
     current_temp = data['main']['temp']
+    current_temp = round(current_temp - 273.15)
     # this will return something like 'clear skies'
     description = data['weather'][0]['description']
     return {"current_temp": current_temp, "description": description}
