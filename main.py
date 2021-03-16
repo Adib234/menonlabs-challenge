@@ -43,7 +43,7 @@ def read_root():
 
 @app.post("/city/")
 def current_city_temp(data: Weather):
-    logging.info(data)
+    print(data)
     url = 'http://api.openweathermap.org/data/2.5/weather?q={0}&appid={1}'.format(
         data.city_name, os.environ.get('API_KEY'))
     data = requests.get(url).json()
