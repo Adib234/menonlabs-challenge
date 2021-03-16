@@ -1,0 +1,46 @@
+from fastapi.logger import logger as fastapi_logger
+import requests
+from typing import Optional
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
+from pydantic import BaseModel
+import logging
+import os
+app = FastAPI()
+
+
+class Weather(BaseModel):
+    city_name: str
+
+
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+    "http://192.168.1.3:8080/"
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
+
+
+@app.post("/city/")
+def current_city_temp(data: Weather):
+    url = 'http://api.openweathermap.org/data/2.5/weather?q={0}&appid={1}'.format(
+        data.city_name, os.environ.get('API_KEY'))
+    data = requests.get(url).json()
+    current_temp = data['main']['temp']
+    # this will return something like 'clear skies'
+    description = data['weather'][0]['description']
+    return {"current_temp": current_temp, "description": description}
