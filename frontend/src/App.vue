@@ -35,6 +35,14 @@
     <div class="is-size-4">Temperature forecasts</div>
     <input v-model="forecasts_city" class="input" type="text" placeholder="Search city" />
     <button @click="createGraph()" class="button">Search that city!</button>
+    <div class="select is-primary">
+      <select v-model="graphChoice">
+        <option>All</option>
+        <option>Normal</option>
+        <option>Maximum</option>
+        <option>Minimum</option>
+      </select>
+    </div>
     <img v-if="success_forecast" :src="image" />
   </div>
 </template>
@@ -64,7 +72,8 @@ export default {
       humidity: 0,
       pressure: 0,
       shown: [false, false, false, false, false, false, false],
-      image: ""
+      image: "",
+      graphChoice: ""
     };
   },
   methods: {
@@ -108,7 +117,7 @@ export default {
       if (this.forecasts_city.length !== 0) {
         let self = this;
         axios
-          .post(`http://127.0.0.1:8000/forecast/`, {
+          .post(`http://127.0.0.1:8000/forecast/${self.graphChoice}`, {
             city_name: this.forecasts_city
           })
           .then(function(response) {

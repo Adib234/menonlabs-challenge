@@ -73,6 +73,7 @@ def current_weather(data: Weather):
 @app.post('/forecast/{forecast_filter}')
 def city_forecast(forecast_filter: str, data: Weather):
     print(data)
+    print(forecast_filter)
     url = 'http://api.openweathermap.org/data/2.5/forecast?q={0}&appid={1}'.format(
         data.city_name, os.environ.get('API_KEY'))
     kelvins = -273.15
@@ -90,20 +91,20 @@ def city_forecast(forecast_filter: str, data: Weather):
     fig = go.Figure()
     # Create and style traces
     title = ''
-    if forecast_filter == '' or forecast_filter == 'all':
+    if forecast_filter == '' or forecast_filter == 'All':
         fig.add_trace(go.Scatter(x=times, y=temp, name='Temperature',
                                  line=dict(color='firebrick', width=4)))
         fig.add_trace(go.Scatter(x=times, y=temp_max, name='Max temp.',
-                                 line=dict(color='firebrick', width=4)))
+                                 line=dict(color='firebrick', width=4, dash="dash")))
         fig.add_trace(go.Scatter(x=times, y=temp_min, name='Min temp.',
-                                 line=dict(color='firebrick', width=4,)))
+                                 line=dict(color='firebrick', width=4, dash='dot')))
         title = 'Temperatures for normal, min, and max forecasted'
-    elif forecast_filter == 'max':
+    elif forecast_filter == 'Maximum':
 
         fig.add_trace(go.Scatter(x=times, y=temp_max, name='Maximum',
                                  line=dict(color='firebrick', width=4)))
         title = 'Temperatures for max forecasted'
-    elif forecast_filter == 'normal':
+    elif forecast_filter == 'Normal':
         fig.add_trace(go.Scatter(x=times, y=temp_max, name='Normal',
                                  line=dict(color='firebrick', width=4)))
         title = 'Temperatures for normal forecasted'
