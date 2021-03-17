@@ -42,7 +42,7 @@ def read_root():
 
 
 @app.post("/city/")
-def current_city_temp(data: Weather):
+def current_weather(data: Weather):
     print(data)
     url = 'http://api.openweathermap.org/data/2.5/weather?q={0}&appid={1}'.format(
         data.city_name, os.environ.get('API_KEY'))
@@ -52,6 +52,35 @@ def current_city_temp(data: Weather):
     # this will return something like 'clear skies
     description = data['weather'][0]['description']
     feels_like = round(data['main']['feels_like'] - 273.15)
+
+    min_temp = data['main']['temp_max']
+    min_temp = round(min_temp - 273.15)
+    max_temp = data['main']['temp_max']
+    max_temp = round(max_temp - 273.15)
+    humidity = data['main']['humidity']
+    pressure = data['main']['pressure']
+
     time_now = data['dt']
     time_now = time.ctime(time_now)
-    return {"time": time_now, "current_temp": current_temp, "feels_like": feels_like, "description": description}
+    return {"time": time_now, "current_temp": current_temp, "feels_like": feels_like, "description": description,
+            "min_temp": min_temp, "max_temp": max_temp, "humidity": humidity, "Pressure": pressure}
+
+
+@app.post('/forecast/')
+def city_forecast(data: Weather):
+    print(data)
+    url = 'http://api.openweathermap.org/data/2.5/forecast?q={0}&appid={1}'.format(
+        data.city_name, os.environ.get('API_KEY'))
+    kelvins = -273.15
+    data = requests.get(url).json()
+    times = []
+    temp = []
+    temp_min = []
+    temp_max = []
+    for item in data['list']:
+        times.append(time.ctime(item['dt']))
+        temp.append(round(item["main"]['temp']+kelvins))
+        temp_max.append(round(item["main"]['temp_max']+kelvins))
+        temp_min.append(round(item["main"]['temp_min']+kelvins))
+
+    return {"times": times, "temp": temp, "temp_min": temp_min, "temp_max": temp_max}

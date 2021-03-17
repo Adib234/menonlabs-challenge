@@ -3,12 +3,12 @@
     <HelloWorld msg="Weather App" />
     <h1 class="Search by city"></h1>
     <div class="is-size-4">Current temperature and condition</div>
-    <input v-model="city" class="input" type="text" placeholder="Search city" />
-    <button @click="searchCity(city)" class="button">Search that city!</button>
+    <input v-model="current_city" class="input" type="text" placeholder="Search city" />
+    <button @click="searchCity()" class="button">Search that city!</button>
     <div v-if="success_current">
       <div
         class="is-size-4 temperature"
-      >Now showing the temperature in {{city}}, last updated {{time}}</div>
+      >Now showing the temperature in {{current_city}}, last updated {{time}}</div>
       <div class="all-tags">
         <div class="checkbox" v-for="(key,index) in Object.keys(hide)" :key="key">
           <label class="checkbox">
@@ -32,12 +32,18 @@
         </tbody>
       </table>
     </div>
+    <div class="is-size-4">Temperature forecasts</div>
+    <input v-model="forecasts_city" class="input" type="text" placeholder="Search city" />
+    <button @click="createGraph()" class="button">Search that city!</button>
+    <canvas v-if="success_forecast" :id="ctx"></canvas>
   </div>
 </template>
 
 <script>
 import HelloWorld from "./components/HelloWorld.vue";
 import axios from "axios";
+import Chart from "chart.js";
+
 export default {
   name: "App",
   components: {
@@ -45,22 +51,29 @@ export default {
   },
   data() {
     return {
-      city: "",
+      current_city: "",
+      forecasts_city: "",
       temperature: 0,
       description: "",
       success_current: false,
+      success_forecast: false,
       time: null,
       feels_like: 0,
-      shown: [false, false, false]
+      min_temp: 0,
+      max_temp: 0,
+      humidity: 0,
+      pressure: 0,
+      shown: [false, false, false, false, false, false, false],
+      ctx: null
     };
   },
   methods: {
     searchCity: function() {
-      if (this.city.length !== 0) {
+      if (this.current_city.length !== 0) {
         let self = this;
         axios
           .post(`http://127.0.0.1:8000/city/`, {
-            city_name: this.city
+            city_name: this.current_city
           })
           .then(function(response) {
             self.success_current = true;
@@ -71,6 +84,13 @@ export default {
             self.description = response.data["description"];
             self.time = response.data["time"];
             self.feels_like = response.data["feels_like"];
+            self.feels_like += " °C";
+            self.min_temp = response.data["min_temp"];
+            self.min_temp += " °C";
+            self.max_temp = response.data["max_temp"];
+            self.max_temp += " °C";
+            self.humidity = response.data["humidity"];
+            self.pressure = response.data["Pressure"];
           })
           .catch(function(error) {
             alert("Please enter a valid city name");
@@ -83,6 +103,66 @@ export default {
     deleteTag: function(tag) {
       this.$set(this.shown, tag, !this.shown[tag]);
       console.log(this.shown[tag]);
+    },
+    createGraph: function() {
+      if (this.forecasts_city.length !== 0) {
+        let self = this;
+        axios
+          .post(`http://127.0.0.1:8000/forecast/`, {
+            city_name: this.forecasts_city
+          })
+          .then(function(response) {
+            console.log(response.data);
+            self.success_forecast = true;
+            const graph = {
+              type: "line",
+              data: {
+                labels: response.data["times"],
+                datasets: [
+                  {
+                    label: "Temperature forecasts",
+                    data: response.data["temp"],
+                    borderColor: "#36495d",
+                    borderWidth: 3
+                  },
+                  {
+                    label: "Min temperature forecasts",
+                    data: response.data["temp_min"],
+                    borderColor: "#36495d",
+                    borderWidth: 3
+                  },
+                  {
+                    label: "Max temperature forecasts",
+                    data: response.data["temp_max"],
+                    borderColor: "#36495d",
+                    borderWidth: 3
+                  }
+                ]
+              },
+              options: {
+                responsive: true,
+                lineTension: 1,
+                scales: {
+                  yAxes: [
+                    {
+                      ticks: {
+                        beginAtZero: true,
+                        padding: 25
+                      }
+                    }
+                  ]
+                }
+              }
+            };
+            new Chart(this.ctx, graph);
+          })
+          .catch(function(error) {
+            alert("Please enter a valid city name");
+            console.log(error);
+          });
+      } else {
+        alert("Please enter a city name");
+      }
     }
   },
   computed: {
@@ -90,7 +170,11 @@ export default {
       return {
         Temperature: this.temperature,
         Description: this.description,
-        "Feels like": this.feels_like
+        "Feels like": this.feels_like,
+        "Minimum Temperature": this.min_temp,
+        "Maximum temperature": this.max_temp,
+        Humidity: this.humidity,
+        Pressure: this.pressure
       };
     }
   }
