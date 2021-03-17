@@ -5,8 +5,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from pydantic import BaseModel
 import logging
+import plotly.graph_objects as go
 import os
 import time
+import base64
+
+
 app = FastAPI()
 
 # MODELS
@@ -66,8 +70,8 @@ def current_weather(data: Weather):
             "min_temp": min_temp, "max_temp": max_temp, "humidity": humidity, "Pressure": pressure}
 
 
-@app.post('/forecast/')
-def city_forecast(data: Weather):
+@app.post('/forecast/{forecast_filter}')
+def city_forecast(forecast_filter: str, data: Weather):
     print(data)
     url = 'http://api.openweathermap.org/data/2.5/forecast?q={0}&appid={1}'.format(
         data.city_name, os.environ.get('API_KEY'))
@@ -83,4 +87,36 @@ def city_forecast(data: Weather):
         temp_max.append(round(item["main"]['temp_max']+kelvins))
         temp_min.append(round(item["main"]['temp_min']+kelvins))
 
-    return {"times": times, "temp": temp, "temp_min": temp_min, "temp_max": temp_max}
+    fig = go.Figure()
+    # Create and style traces
+    title = ''
+    if forecast_filter == '' or forecast_filter == 'all':
+        fig.add_trace(go.Scatter(x=times, y=temp, name='Temperature',
+                                 line=dict(color='firebrick', width=4)))
+        fig.add_trace(go.Scatter(x=times, y=temp_max, name='Max temp.',
+                                 line=dict(color='firebrick', width=4)))
+        fig.add_trace(go.Scatter(x=times, y=temp_min, name='Min temp.',
+                                 line=dict(color='firebrick', width=4,)))
+        title = 'Temperatures for normal, min, and max forecasted'
+    elif forecast_filter == 'max':
+
+        fig.add_trace(go.Scatter(x=times, y=temp_max, name='Maximum',
+                                 line=dict(color='firebrick', width=4)))
+        title = 'Temperatures for max forecasted'
+    elif forecast_filter == 'normal':
+        fig.add_trace(go.Scatter(x=times, y=temp_max, name='Normal',
+                                 line=dict(color='firebrick', width=4)))
+        title = 'Temperatures for normal forecasted'
+    else:
+        fig.add_trace(go.Scatter(x=times, y=temp_min, name='Minimum',
+                                 line=dict(color='firebrick', width=4)))
+        title = 'Temperatures for min forecasted'
+
+        # Edit the layout
+    fig.update_layout(title=title,
+                      xaxis_title='Time',
+                      yaxis_title='Temperature (degrees C)')
+    fig.write_image("images/fig1.webp")
+    with open("images/fig1.webp", "rb") as image_file:
+        encoded_string = base64.b64encode(image_file.read())
+    return encoded_string

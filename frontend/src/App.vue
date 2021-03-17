@@ -35,14 +35,14 @@
     <div class="is-size-4">Temperature forecasts</div>
     <input v-model="forecasts_city" class="input" type="text" placeholder="Search city" />
     <button @click="createGraph()" class="button">Search that city!</button>
-    <canvas v-if="success_forecast" :id="ctx"></canvas>
+    <img v-if="success_forecast" :src="image" />
   </div>
 </template>
 
 <script>
 import HelloWorld from "./components/HelloWorld.vue";
 import axios from "axios";
-import Chart from "chart.js";
+//import Chart from "chart.js";
 
 export default {
   name: "App",
@@ -64,7 +64,7 @@ export default {
       humidity: 0,
       pressure: 0,
       shown: [false, false, false, false, false, false, false],
-      ctx: null
+      image: ""
     };
   },
   methods: {
@@ -114,47 +114,7 @@ export default {
           .then(function(response) {
             console.log(response.data);
             self.success_forecast = true;
-            const graph = {
-              type: "line",
-              data: {
-                labels: response.data["times"],
-                datasets: [
-                  {
-                    label: "Temperature forecasts",
-                    data: response.data["temp"],
-                    borderColor: "#36495d",
-                    borderWidth: 3
-                  },
-                  {
-                    label: "Min temperature forecasts",
-                    data: response.data["temp_min"],
-                    borderColor: "#36495d",
-                    borderWidth: 3
-                  },
-                  {
-                    label: "Max temperature forecasts",
-                    data: response.data["temp_max"],
-                    borderColor: "#36495d",
-                    borderWidth: 3
-                  }
-                ]
-              },
-              options: {
-                responsive: true,
-                lineTension: 1,
-                scales: {
-                  yAxes: [
-                    {
-                      ticks: {
-                        beginAtZero: true,
-                        padding: 25
-                      }
-                    }
-                  ]
-                }
-              }
-            };
-            new Chart(this.ctx, graph);
+            self.image = "data:image/png;base64, " + response.data;
           })
           .catch(function(error) {
             alert("Please enter a valid city name");

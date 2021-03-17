@@ -2,6 +2,8 @@
 
 # Challenges
 
+- Figuring out a backend we could use and how we would go about dividing up the work according to our strengths
+
 # Things we learned
 
 ## Adib
