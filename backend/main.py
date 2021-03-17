@@ -117,7 +117,7 @@ def city_forecast(forecast_filter: str, data: Weather):
     fig.update_layout(title=title,
                       xaxis_title='Time',
                       yaxis_title='Temperature (degrees C)')
-    fig.write_image("images/fig1.webp")
-    with open("images/fig1.webp", "rb") as image_file:
+    fig.write_image("../images/fig1.webp")
+    with open("../images/fig1.webp", "rb") as image_file:
         encoded_string = base64.b64encode(image_file.read())
     return encoded_string
