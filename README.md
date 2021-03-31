@@ -23,6 +23,12 @@ Here's how it looks like!
 - Django requires a lot of setup so we ended up choosing FastAPI
 - Learned how to create my own way to log requests to better debug
 - Never ever mutate computed properties!
+- If you get Docker problems such as error in TLS connections, do the following
+
+`sudo docker-machine rm default`
+`docker-machine create default --driver virtualbox`
+`docker-machine env default`
+`eval $(docker-machine env default) # to configure the shell`
 
 # To do
 
