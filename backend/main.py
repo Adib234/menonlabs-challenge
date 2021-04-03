@@ -1,10 +1,8 @@
-from fastapi.logger import logger as fastapi_logger
 import requests
 from typing import Optional
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
 from pydantic import BaseModel
-import logging
 import plotly.graph_objects as go
 import os
 import time
