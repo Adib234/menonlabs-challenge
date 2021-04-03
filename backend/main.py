@@ -24,6 +24,7 @@ origins = [
     "https://localhost.tiangolo.com",
     "http://localhost",
     "http://localhost:8080",
+    "http://127.0.0.1:8080",
     "http://192.168.1.3:8080/"
 ]
 
@@ -41,6 +42,11 @@ app.add_middleware(
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get("/test")
+def send_result():
+    return os.environ.get('API_KEY')
 
 
 @app.post("/city/")

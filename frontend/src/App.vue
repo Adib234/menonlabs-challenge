@@ -81,7 +81,7 @@ export default {
       if (this.current_city.length !== 0) {
         let self = this;
         axios
-          .post(`http://127.0.0.1:8000/city/`, {
+          .post(`http://localhost:80/city/`, {
             city_name: this.current_city
           })
           .then(function(response) {
@@ -117,7 +117,7 @@ export default {
       if (this.forecasts_city.length !== 0) {
         let self = this;
         axios
-          .post(`http://127.0.0.1:8000/forecast/${self.graphChoice}`, {
+          .post(`http://localhost:80/forecast/${self.graphChoice}`, {
             city_name: this.forecasts_city
           })
           .then(function(response) {
