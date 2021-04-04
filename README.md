@@ -26,5 +26,6 @@ Here's how it looks like!
 
 # To do
 
+- why are logs in my docker compose flipped, why does frontend show backend and vice versa
 - why is there rerouting happening in docker compose but not docker run
 - where the heck is my environment variables
