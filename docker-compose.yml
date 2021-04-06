@@ -7,8 +7,10 @@ services:
       context: ./backend
     ports:
       - 80:80
+    image: adibdocker/menonlabs-backend
   frontend:
     build:
       context: ./frontend
+    image: adibdocker/menonlabs-frontend
     ports:
       - 8080:8080

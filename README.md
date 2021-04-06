@@ -23,6 +23,7 @@ Here's how it looks like!
 - Django requires a lot of setup so we ended up choosing FastAPI
 - Learned how to create my own way to log requests to better debug
 - Never ever mutate computed properties!
+- To push to Docker Hub, first tag the local image to the repo created in docker hub, (getting the local image is `docker images`)
 
 # To do
 
