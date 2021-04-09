@@ -24,9 +24,3 @@ Here's how it looks like!
 - Learned how to create my own way to log requests to better debug
 - Never ever mutate computed properties!
 - To push to Docker Hub, first tag the local image to the repo created in docker hub, (getting the local image is `docker images`)
-
-# To do
-
-- why are logs in my docker compose flipped, why does frontend show backend and vice versa
-- why is there rerouting happening in docker compose but not docker run
-- where the heck is my environment variables
